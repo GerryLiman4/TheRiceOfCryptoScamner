@@ -1,13 +1,11 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerWalkingState : PlayerBaseState
+public class PlayerRunningState : PlayerBaseState
 {
-    private readonly int WalkHash = Animator.StringToHash("Walk");
+    private readonly int RunHash = Animator.StringToHash("Run");
     private const float CrossFadeDuration = 0.1f;
 
-    public PlayerWalkingState(PlayerStateMachine stateMachine, StateID previousStateID) : base(stateMachine, previousStateID)
+    public PlayerRunningState(PlayerStateMachine stateMachine, StateID previousStateID) : base(stateMachine,previousStateID)
     {
         this.stateMachine = stateMachine;
         this.PreviousStateID = previousStateID;
@@ -19,8 +17,8 @@ public class PlayerWalkingState : PlayerBaseState
     public override void Enter()
     {
         base.Enter();
-        stateMachine.animator.CrossFadeInFixedTime(WalkHash, 0);
-        CurrentStateID = StateID.Walk;
+        stateMachine.animator.CrossFadeInFixedTime(RunHash, 0);
+        CurrentStateID = StateID.Run;
     }
 
     public override void Exit()
@@ -30,7 +28,7 @@ public class PlayerWalkingState : PlayerBaseState
 
     public override void FixedTick()
     {
-       
+
     }
 
     public override void LateTick()
@@ -40,8 +38,13 @@ public class PlayerWalkingState : PlayerBaseState
 
     public override void Tick(float deltaTime)
     {
-        base.Tick(deltaTime);
-        if(stateMachine.playerInputReader.isSprinting) stateMachine.SwitchState(new PlayerRunningState(this.stateMachine,CurrentStateID));
+        stateMachine.groundDetector.CheckGround();
+        stateMachine.playerMovementController.Move(stateMachine.playerInputReader.movement,true);
+
+        if (!stateMachine.playerInputReader.isSprinting)
+        {
+            stateMachine.SwitchState(new PlayerWalkingState(this.stateMachine,CurrentStateID));
+        }
     }
 
     protected override void Flip(Vector2 direction)
@@ -50,17 +53,16 @@ public class PlayerWalkingState : PlayerBaseState
         else if (direction.x < 0 && stateMachine.transform.localScale.x < 0) return;
         else if (direction.x == 0) return;
 
-        stateMachine.transform.localScale = new Vector3(-stateMachine.transform.localScale.x, stateMachine.transform.localScale.y, stateMachine.transform.localScale.z);        
+        stateMachine.transform.localScale = new Vector3(-stateMachine.transform.localScale.x, stateMachine.transform.localScale.y, stateMachine.transform.localScale.z);
     }
 
     protected override void OnJump()
     {
-        stateMachine.SwitchState(new PlayerJumpState(this.stateMachine,CurrentStateID));
+        stateMachine.SwitchState(new PlayerJumpState(this.stateMachine, CurrentStateID));
     }
 
     protected override void OnMove(Vector2 direction)
     {
-        stateMachine.playerMovementController.Move(stateMachine.playerInputReader.movement);
         Flip(stateMachine.playerInputReader.movement);
     }
 
@@ -71,6 +73,6 @@ public class PlayerWalkingState : PlayerBaseState
 
     protected override void OnSprint()
     {
-        stateMachine.SwitchState(new PlayerRunningState(this.stateMachine, CurrentStateID));
+
     }
 }

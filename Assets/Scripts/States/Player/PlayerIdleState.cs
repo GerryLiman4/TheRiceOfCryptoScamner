@@ -1,6 +1,4 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerIdleState : PlayerBaseState
@@ -8,11 +6,12 @@ public class PlayerIdleState : PlayerBaseState
     private readonly int IdleHash = Animator.StringToHash("Idle");
     private const float CrossFadeDuration = 0.1f;
     public override StateID CurrentStateID { get; set; }
+    public override StateID PreviousStateID { get; set; }
 
-    public PlayerIdleState(PlayerStateMachine stateMachine) : base(stateMachine)
+    public PlayerIdleState(PlayerStateMachine stateMachine, StateID previousStateID) : base(stateMachine,previousStateID)
     {
         this.stateMachine = stateMachine;
-  
+        this.PreviousStateID = previousStateID;
     }
 
 
@@ -20,6 +19,7 @@ public class PlayerIdleState : PlayerBaseState
     {
         base.Enter();
         stateMachine.animator.CrossFade(IdleHash, 0);
+        CurrentStateID = StateID.Idle;
     }
 
     public override void Exit()
@@ -42,7 +42,7 @@ public class PlayerIdleState : PlayerBaseState
         base.Tick(deltaTime);
         if (stateMachine.playerInputReader.movement != Vector2.zero)
         {
-            stateMachine.SwitchState(new PlayerWalkingState(this.stateMachine));
+            stateMachine.SwitchState(new PlayerWalkingState(this.stateMachine, CurrentStateID));
         }
 
     }
@@ -57,16 +57,26 @@ public class PlayerIdleState : PlayerBaseState
 
     protected override void OnJump()
     {
-        stateMachine.SwitchState(new PlayerJumpState(this.stateMachine));
+        stateMachine.SwitchState(new PlayerJumpState(this.stateMachine, CurrentStateID));
     }
 
     protected override void OnMove(Vector2 direction)
     {
         Flip(stateMachine.playerInputReader.movement);
-        stateMachine.SwitchState(new PlayerWalkingState(this.stateMachine));
+        if (stateMachine.playerInputReader.isSprinting)
+        {
+            stateMachine.SwitchState(new PlayerRunningState(this.stateMachine, CurrentStateID));
+            return;
+        }
+        stateMachine.SwitchState(new PlayerWalkingState(this.stateMachine, CurrentStateID));
     }
 
     protected override void OnStop()
+    {
+        
+    }
+
+    protected override void OnSprint()
     {
         
     }

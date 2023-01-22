@@ -6,15 +6,17 @@ public abstract class PlayerBaseState : State
 {
     protected PlayerStateMachine stateMachine;
 
-    public PlayerBaseState(PlayerStateMachine stateMachine)
+    public PlayerBaseState(PlayerStateMachine stateMachine,StateID previousStateID = StateID.Idle)
     {
         this.stateMachine = stateMachine;
+        this.PreviousStateID = previousStateID;
     }
     public override void Enter()
     {
         stateMachine.playerInputReader.Jump += OnJump;
         stateMachine.playerInputReader.Move += OnMove;
         stateMachine.playerInputReader.Stop += OnStop;
+        stateMachine.playerInputReader.Sprint += OnSprint;
     }
 
 
@@ -23,24 +25,25 @@ public abstract class PlayerBaseState : State
         stateMachine.playerInputReader.Jump -= OnJump;
         stateMachine.playerInputReader.Move -= OnMove;
         stateMachine.playerInputReader.Stop -= OnStop;
+        stateMachine.playerInputReader.Sprint -= OnSprint;
     }                                       
     protected abstract void Flip(Vector2 direction);
 
     public override void Tick(float deltaTime) {
-        stateMachine.groundDetector.CheckGround();
+        if (!stateMachine.groundDetector.CheckGround())
+        {
+            stateMachine.SwitchState(new PlayerFallState(this.stateMachine, CurrentStateID));
+        }
         stateMachine.playerMovementController.Move(stateMachine.playerInputReader.movement);
     }
 
     public override void LateTick()
     {
-        Debug.Log("fall" + !stateMachine.groundDetector.isGrounded);
-        if (!stateMachine.groundDetector.isGrounded)
-        {
-            stateMachine.SwitchState(new PlayerFallState(this.stateMachine));
-        }
+      
     }
 
     protected abstract void OnJump();
     protected abstract void OnMove(Vector2 direction);
     protected abstract void OnStop();
+    protected abstract void OnSprint();
 }

@@ -4,6 +4,7 @@ public enum StateID{
     Hurt,
     Jump,
     Fall,
-    Move,
+    Walk,
+    Run,
     Die
 }

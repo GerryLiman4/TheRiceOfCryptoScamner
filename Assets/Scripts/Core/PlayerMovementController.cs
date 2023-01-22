@@ -5,6 +5,7 @@ using UnityEngine;
 public class PlayerMovementController : MovementController
 {
     [SerializeField] public float jumpTime = 0.25f;
+    [SerializeField] public float sprintSpeedMultiplier = 1.25f;
     [SerializeField] public float maxHoldTime = 0.20f;
     [SerializeField] private float jumpBoostTreshold = 0.05f;
     [SerializeField] private float jumpBoostMultiplier = 1.25f;
@@ -40,7 +41,11 @@ public class PlayerMovementController : MovementController
                 break;
         }
     }
-
+    public void Move(Vector2 directionInput, bool isSprinting)
+    {
+        moveVelocity = new Vector2(directionInput.x * moveSpeed * sprintSpeedMultiplier, rigidBody2D.velocity.y);
+    }
+     
     public void Fall()
     {
         rigidBody2D.velocity = new Vector2(moveVelocity.x, gravityPull.y);

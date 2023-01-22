@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerFallState : PlayerBaseState
@@ -7,16 +5,28 @@ public class PlayerFallState : PlayerBaseState
     private readonly int FallHash = Animator.StringToHash("Fall");
     private const float CrossFadeDuration = 0.1f;
     private float jumpTimer;
-    public PlayerFallState(PlayerStateMachine stateMachine) : base(stateMachine)
+    private bool isRunning = false;
+    public PlayerFallState(PlayerStateMachine stateMachine, StateID previousStateID) : base(stateMachine,previousStateID)
     {
         this.stateMachine = stateMachine;
+        this.PreviousStateID = previousStateID;
+    }
+
+    public PlayerFallState(PlayerStateMachine stateMachine, StateID previousStateID,bool isRunning) : base(stateMachine, previousStateID)
+    {
+        this.stateMachine = stateMachine;
+        this.PreviousStateID = previousStateID;
+        this.isRunning = isRunning;
+
     }
 
     public override StateID CurrentStateID { get; set; }
+    public override StateID PreviousStateID { get; set; }
 
     public override void Enter()
     {
         base.Enter();
+        CurrentStateID = StateID.Fall;
         stateMachine.animator.CrossFadeInFixedTime(FallHash, 0);
         stateMachine.playerMovementController.Fall();
     }
@@ -38,11 +48,19 @@ public class PlayerFallState : PlayerBaseState
 
     public override void Tick(float deltaTime)
     {
-        base.Tick(deltaTime);
-        
-        if (stateMachine.playerRigidbody.velocity.y == 0)
+        if (!isRunning)
         {
-            stateMachine.SwitchState(new PlayerIdleState(this.stateMachine));
+            base.Tick(deltaTime);
+        }
+        else
+        {
+            stateMachine.groundDetector.CheckGround();
+            stateMachine.playerMovementController.Move(stateMachine.playerInputReader.movement, true);
+        }
+        
+        if (stateMachine.playerRigidbody.velocity.y == 0 && stateMachine.groundDetector.isGrounded)
+        {
+            stateMachine.SwitchState(new PlayerIdleState(this.stateMachine, CurrentStateID));
         }
     }
 
@@ -66,6 +84,11 @@ public class PlayerFallState : PlayerBaseState
     }
 
     protected override void OnStop()
+    {
+       
+    }
+
+    protected override void OnSprint()
     {
        
     }

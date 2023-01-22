@@ -12,7 +12,7 @@ public class PlayerStateMachine : StateMachine
     [field: SerializeField] public GroundDetector groundDetector{ get; private set; }
     private void Start()
     {
-        SwitchState(new PlayerIdleState(this));
+        SwitchState(new PlayerIdleState(this, StateID.Idle));
         playerMovementController.Initialize(playerRigidbody);
     }
     //private void Update()

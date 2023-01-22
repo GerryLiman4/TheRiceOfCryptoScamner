@@ -24,7 +24,7 @@ public class AudioStatesController : AudioController
         }
         switch (state)
         {
-            case StateID.Move:
+            case StateID.Walk:
                 if (moveClip.Length == 0) return;
                 audioSource.clip = moveClip[Random.Range(0, moveClip.Length)];
                 //audioSource.PlayOneShot(moveClip[Random.Range(0, moveClip.Length)]);

@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerJumpState : PlayerBaseState
@@ -8,12 +6,15 @@ public class PlayerJumpState : PlayerBaseState
     private const float CrossFadeDuration = 0.1f;
     private float jumpTimer;
     private float jumpTime;
-    public PlayerJumpState(PlayerStateMachine stateMachine) : base(stateMachine)
+   
+    public PlayerJumpState(PlayerStateMachine stateMachine, StateID previousStateID) : base(stateMachine, previousStateID)
     {
         this.stateMachine = stateMachine;
+        this.PreviousStateID = previousStateID;
     }
 
     public override StateID CurrentStateID { get; set; }
+    public override StateID PreviousStateID { get; set; }
 
     public override void Enter()
     {
@@ -21,6 +22,7 @@ public class PlayerJumpState : PlayerBaseState
         stateMachine.animator.CrossFadeInFixedTime(JumpHash, 0);
         jumpTime = stateMachine.playerMovementController.jumpTime;
         jumpTimer = 0;
+        CurrentStateID = StateID.Jump;
 
     }
 
@@ -31,10 +33,8 @@ public class PlayerJumpState : PlayerBaseState
 
     public override void FixedTick()
     {
-        Debug.Log(stateMachine.playerRigidbody.velocity.y);
         if (stateMachine.playerRigidbody.velocity.y >= 0) return;
-        Debug.Log("Masuk Sini");
-        stateMachine.SwitchState(new PlayerFallState(this.stateMachine));
+        stateMachine.SwitchState(new PlayerFallState(this.stateMachine, CurrentStateID, PreviousStateID == StateID.Run ? true : false));
     }
 
     public override void LateTick()
@@ -44,11 +44,19 @@ public class PlayerJumpState : PlayerBaseState
 
     public override void Tick(float deltaTime)
     {
-        base.Tick(deltaTime);
-       
+        stateMachine.groundDetector.CheckGround();
+        if (PreviousStateID != StateID.Run)
+        {
+            stateMachine.playerMovementController.Move(stateMachine.playerInputReader.movement);
+        }
+        else
+        {
+            stateMachine.playerMovementController.Move(stateMachine.playerInputReader.movement, true);
+        }
+
         if (!stateMachine.playerInputReader.isJumping && jumpTimer < stateMachine.playerMovementController.maxHoldTime)
         {
-            stateMachine.SwitchState(new PlayerFallState(this.stateMachine));
+            stateMachine.SwitchState(new PlayerFallState(this.stateMachine, CurrentStateID, PreviousStateID == StateID.Run ? true : false)) ;
             return;
         }
         jumpTimer += Time.deltaTime;
@@ -82,5 +90,10 @@ public class PlayerJumpState : PlayerBaseState
     protected override void OnStop()
     {
 
+    }
+
+    protected override void OnSprint()
+    {
+        
     }
 }
