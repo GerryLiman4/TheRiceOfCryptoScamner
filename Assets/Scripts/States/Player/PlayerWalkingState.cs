@@ -73,4 +73,9 @@ public class PlayerWalkingState : PlayerBaseState
     {
         stateMachine.SwitchState(new PlayerRunningState(this.stateMachine, CurrentStateID));
     }
+
+    protected override void OnCrouch()
+    {
+        stateMachine.SwitchState(new PlayerCrouchState(this.stateMachine, CurrentStateID));
+    }
 }

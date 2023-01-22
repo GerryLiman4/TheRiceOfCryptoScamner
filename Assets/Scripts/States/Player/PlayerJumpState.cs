@@ -96,4 +96,9 @@ public class PlayerJumpState : PlayerBaseState
     {
         
     }
+
+    protected override void OnCrouch()
+    {
+       
+    }
 }

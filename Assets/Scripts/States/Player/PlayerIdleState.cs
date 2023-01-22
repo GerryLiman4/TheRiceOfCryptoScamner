@@ -80,4 +80,9 @@ public class PlayerIdleState : PlayerBaseState
     {
         
     }
+
+    protected override void OnCrouch()
+    {
+        stateMachine.SwitchState(new PlayerCrouchState(this.stateMachine, CurrentStateID));
+    }
 }

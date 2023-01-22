@@ -17,6 +17,7 @@ public abstract class PlayerBaseState : State
         stateMachine.playerInputReader.Move += OnMove;
         stateMachine.playerInputReader.Stop += OnStop;
         stateMachine.playerInputReader.Sprint += OnSprint;
+        stateMachine.playerInputReader.Crouch += OnCrouch;
     }
 
 
@@ -26,6 +27,7 @@ public abstract class PlayerBaseState : State
         stateMachine.playerInputReader.Move -= OnMove;
         stateMachine.playerInputReader.Stop -= OnStop;
         stateMachine.playerInputReader.Sprint -= OnSprint;
+        stateMachine.playerInputReader.Crouch -= OnCrouch;
     }                                       
     protected abstract void Flip(Vector2 direction);
 
@@ -46,4 +48,5 @@ public abstract class PlayerBaseState : State
     protected abstract void OnMove(Vector2 direction);
     protected abstract void OnStop();
     protected abstract void OnSprint();
+    protected abstract void OnCrouch();
 }

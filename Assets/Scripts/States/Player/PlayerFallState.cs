@@ -92,4 +92,9 @@ public class PlayerFallState : PlayerBaseState
     {
        
     }
+
+    protected override void OnCrouch()
+    {
+        
+    }
 }

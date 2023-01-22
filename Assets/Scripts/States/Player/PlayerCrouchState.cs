@@ -1,24 +1,27 @@
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerRunningState : PlayerBaseState
+public class PlayerCrouchState : PlayerBaseState
 {
-    private readonly int RunHash = Animator.StringToHash("Run");
+    private readonly int CrouchHash = Animator.StringToHash("Crouch");
     private const float CrossFadeDuration = 0.1f;
+    public override StateID CurrentStateID { get; set; }
+    public override StateID PreviousStateID { get; set; }
 
-    public PlayerRunningState(PlayerStateMachine stateMachine, StateID previousStateID) : base(stateMachine,previousStateID)
+    public PlayerCrouchState(PlayerStateMachine stateMachine, StateID previousStateID) : base(stateMachine, previousStateID)
     {
         this.stateMachine = stateMachine;
         this.PreviousStateID = previousStateID;
     }
 
-    public override StateID CurrentStateID { get; set; }
-    public override StateID PreviousStateID { get; set; }
 
     public override void Enter()
     {
         base.Enter();
-        stateMachine.animator.CrossFadeInFixedTime(RunHash, 0);
-        CurrentStateID = StateID.Run;
+        stateMachine.animator.CrossFade(CrouchHash, 0);
+        CurrentStateID = StateID.Crouch;
+        stateMachine.playerMovementController.Stop();
     }
 
     public override void Exit()
@@ -38,15 +41,17 @@ public class PlayerRunningState : PlayerBaseState
 
     public override void Tick(float deltaTime)
     {
-        stateMachine.groundDetector.CheckGround();
-        stateMachine.playerMovementController.Move(stateMachine.playerInputReader.movement,true);
-
-        if (!stateMachine.playerInputReader.isSprinting)
+        if (!stateMachine.groundDetector.CheckGround())
         {
-            stateMachine.SwitchState(new PlayerWalkingState(this.stateMachine,CurrentStateID));
+            stateMachine.SwitchState(new PlayerFallState(this.stateMachine, CurrentStateID));
         }
-    }
 
+        if (!stateMachine.playerInputReader.isCrouching)
+        {
+            stateMachine.SwitchState(new PlayerIdleState(this.stateMachine, CurrentStateID));
+        }
+
+    }
     protected override void Flip(Vector2 direction)
     {
         if (direction.x > 0 && stateMachine.transform.localScale.x > 0) return;
@@ -68,16 +73,15 @@ public class PlayerRunningState : PlayerBaseState
 
     protected override void OnStop()
     {
-        stateMachine.SwitchState(new PlayerIdleState(this.stateMachine,CurrentStateID));
+
     }
 
     protected override void OnSprint()
     {
 
     }
-
     protected override void OnCrouch()
     {
-        stateMachine.SwitchState(new PlayerCrouchState(this.stateMachine, CurrentStateID));
+        
     }
 }

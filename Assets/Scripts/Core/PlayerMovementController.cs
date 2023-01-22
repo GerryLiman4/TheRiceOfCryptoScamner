@@ -70,6 +70,9 @@ public class PlayerMovementController : MovementController
             }
         }
     }
+    public void Stop() {
+        moveVelocity = new Vector2(0, rigidBody2D.velocity.y);
+    }
 
     // Start is called before the first frame update
     void Start()
