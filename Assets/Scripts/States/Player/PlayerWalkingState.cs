@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerWalkingState : PlayerBaseState
@@ -20,6 +18,7 @@ public class PlayerWalkingState : PlayerBaseState
     {
         base.Enter();
         stateMachine.animator.CrossFadeInFixedTime(WalkHash, 0);
+        Flip(stateMachine.playerInputReader.movement);
         CurrentStateID = StateID.Walk;
     }
 
@@ -77,5 +76,10 @@ public class PlayerWalkingState : PlayerBaseState
     protected override void OnCrouch()
     {
         stateMachine.SwitchState(new PlayerCrouchState(this.stateMachine, CurrentStateID));
+    }
+
+    protected override void OnAttack()
+    {
+        stateMachine.SwitchState(new PlayerAttackState(this.stateMachine, CurrentStateID));
     }
 }

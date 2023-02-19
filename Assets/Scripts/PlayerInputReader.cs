@@ -11,10 +11,12 @@ public class PlayerInputReader : MonoBehaviour,_2DPlatformerControls.IPlayerInGa
     public event Action Stop;
     public event Action Sprint;
     public event Action Crouch;
+    public event Action Attack;
     public Vector2 movement;
     public bool isJumping;
     public bool isSprinting;
     public bool isCrouching;
+    public bool isAttacking;
 
     public void OnJump(InputAction.CallbackContext context)
     {
@@ -63,5 +65,12 @@ public class PlayerInputReader : MonoBehaviour,_2DPlatformerControls.IPlayerInGa
         isCrouching = context.performed;
         if (!isCrouching) return;
         Crouch?.Invoke();
+    }
+
+    public void OnAttack(InputAction.CallbackContext context)
+    {
+        isAttacking = context.performed;
+        if (!context.performed) return;
+        Attack?.Invoke();
     }
 }

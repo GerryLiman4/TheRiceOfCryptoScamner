@@ -62,6 +62,15 @@ public partial class @_2DPlatformerControls : IInputActionCollection2, IDisposab
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Attack"",
+                    ""type"": ""Button"",
+                    ""id"": ""8b555c2f-6675-4801-9f1c-2943ff99496f"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -130,6 +139,17 @@ public partial class @_2DPlatformerControls : IInputActionCollection2, IDisposab
                     ""action"": ""Crouch"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""e38df9c8-c262-4da7-ae5f-213f921d6b3a"",
+                    ""path"": ""<Keyboard>/j"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""MouseKeyboard"",
+                    ""action"": ""Attack"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -159,6 +179,7 @@ public partial class @_2DPlatformerControls : IInputActionCollection2, IDisposab
         m_PlayerInGame_Movement = m_PlayerInGame.FindAction("Movement", throwIfNotFound: true);
         m_PlayerInGame_Running = m_PlayerInGame.FindAction("Running", throwIfNotFound: true);
         m_PlayerInGame_Crouch = m_PlayerInGame.FindAction("Crouch", throwIfNotFound: true);
+        m_PlayerInGame_Attack = m_PlayerInGame.FindAction("Attack", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -222,6 +243,7 @@ public partial class @_2DPlatformerControls : IInputActionCollection2, IDisposab
     private readonly InputAction m_PlayerInGame_Movement;
     private readonly InputAction m_PlayerInGame_Running;
     private readonly InputAction m_PlayerInGame_Crouch;
+    private readonly InputAction m_PlayerInGame_Attack;
     public struct PlayerInGameActions
     {
         private @_2DPlatformerControls m_Wrapper;
@@ -230,6 +252,7 @@ public partial class @_2DPlatformerControls : IInputActionCollection2, IDisposab
         public InputAction @Movement => m_Wrapper.m_PlayerInGame_Movement;
         public InputAction @Running => m_Wrapper.m_PlayerInGame_Running;
         public InputAction @Crouch => m_Wrapper.m_PlayerInGame_Crouch;
+        public InputAction @Attack => m_Wrapper.m_PlayerInGame_Attack;
         public InputActionMap Get() { return m_Wrapper.m_PlayerInGame; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -251,6 +274,9 @@ public partial class @_2DPlatformerControls : IInputActionCollection2, IDisposab
                 @Crouch.started -= m_Wrapper.m_PlayerInGameActionsCallbackInterface.OnCrouch;
                 @Crouch.performed -= m_Wrapper.m_PlayerInGameActionsCallbackInterface.OnCrouch;
                 @Crouch.canceled -= m_Wrapper.m_PlayerInGameActionsCallbackInterface.OnCrouch;
+                @Attack.started -= m_Wrapper.m_PlayerInGameActionsCallbackInterface.OnAttack;
+                @Attack.performed -= m_Wrapper.m_PlayerInGameActionsCallbackInterface.OnAttack;
+                @Attack.canceled -= m_Wrapper.m_PlayerInGameActionsCallbackInterface.OnAttack;
             }
             m_Wrapper.m_PlayerInGameActionsCallbackInterface = instance;
             if (instance != null)
@@ -267,6 +293,9 @@ public partial class @_2DPlatformerControls : IInputActionCollection2, IDisposab
                 @Crouch.started += instance.OnCrouch;
                 @Crouch.performed += instance.OnCrouch;
                 @Crouch.canceled += instance.OnCrouch;
+                @Attack.started += instance.OnAttack;
+                @Attack.performed += instance.OnAttack;
+                @Attack.canceled += instance.OnAttack;
             }
         }
     }
@@ -286,5 +315,6 @@ public partial class @_2DPlatformerControls : IInputActionCollection2, IDisposab
         void OnMovement(InputAction.CallbackContext context);
         void OnRunning(InputAction.CallbackContext context);
         void OnCrouch(InputAction.CallbackContext context);
+        void OnAttack(InputAction.CallbackContext context);
     }
 }

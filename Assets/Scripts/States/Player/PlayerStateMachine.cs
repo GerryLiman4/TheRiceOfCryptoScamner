@@ -10,6 +10,7 @@ public class PlayerStateMachine : StateMachine
     [field: SerializeField] public BoxCollider2D playerBoxCollider{ get; private set; }
     [field: SerializeField] public PlayerMovementController playerMovementController { get; private set; }
     [field: SerializeField] public GroundDetector groundDetector{ get; private set; }
+    [field: SerializeField] public AttackController attackController { get; private set; }
     private void Start()
     {
         SwitchState(new PlayerIdleState(this, StateID.Idle));

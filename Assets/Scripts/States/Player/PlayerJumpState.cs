@@ -101,4 +101,8 @@ public class PlayerJumpState : PlayerBaseState
     {
        
     }
+    protected override void OnAttack()
+    {
+        //stateMachine.SwitchState(new PlayerAttackState(this.stateMachine, CurrentStateID));
+    }
 }

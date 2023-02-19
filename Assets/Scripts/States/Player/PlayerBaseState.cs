@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -18,8 +19,8 @@ public abstract class PlayerBaseState : State
         stateMachine.playerInputReader.Stop += OnStop;
         stateMachine.playerInputReader.Sprint += OnSprint;
         stateMachine.playerInputReader.Crouch += OnCrouch;
+        stateMachine.playerInputReader.Attack += OnAttack;
     }
-
 
     public override void Exit()
     {
@@ -28,6 +29,7 @@ public abstract class PlayerBaseState : State
         stateMachine.playerInputReader.Stop -= OnStop;
         stateMachine.playerInputReader.Sprint -= OnSprint;
         stateMachine.playerInputReader.Crouch -= OnCrouch;
+        stateMachine.playerInputReader.Attack += OnAttack;
     }                                       
     protected abstract void Flip(Vector2 direction);
 
@@ -49,4 +51,5 @@ public abstract class PlayerBaseState : State
     protected abstract void OnStop();
     protected abstract void OnSprint();
     protected abstract void OnCrouch();
+    protected abstract void OnAttack();
 }

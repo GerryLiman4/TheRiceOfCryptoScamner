@@ -80,4 +80,8 @@ public class PlayerRunningState : PlayerBaseState
     {
         stateMachine.SwitchState(new PlayerCrouchState(this.stateMachine, CurrentStateID));
     }
+    protected override void OnAttack()
+    {
+        stateMachine.SwitchState(new PlayerAttackState(this.stateMachine, CurrentStateID));
+    }
 }

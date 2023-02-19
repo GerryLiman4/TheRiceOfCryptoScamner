@@ -48,7 +48,7 @@ public class PlayerMovementController : MovementController
      
     public void Fall()
     {
-        rigidBody2D.velocity = new Vector2(moveVelocity.x, gravityPull.y);
+        rigidBody2D.velocity = new Vector2(moveVelocity.x, gravityPull.y * 1.25f);
         moveVelocity = new Vector2(rigidBody2D.velocity.x, rigidBody2D.velocity.y);
     }
 
@@ -89,4 +89,5 @@ public class PlayerMovementController : MovementController
     {
         rigidBody2D.velocity = moveVelocity;
     }
+
 }
